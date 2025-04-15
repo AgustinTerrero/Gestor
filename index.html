@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Sistema de Gestión - Accesorios de Celulares</title>
+    
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Sistema de Gestión - Accesorios de Celulares</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="dashboard">Dashboard</div>
+            <div class="tab" data-tab="inventory">Inventario</div>
+            <div class="tab" data-tab="sales">Ventas</div>
+            <div class="tab" data-tab="search">Buscar</div>
+        </div>
+        
+        <div id="notification"></div>
+        
+        <!-- Dashboard -->
+        <div class="content active" id="dashboard">
+            <h2>Dashboard</h2>
+            <div class="grid-container">
+                <div class="card">
+                    <h3>Total Productos</h3>
+                    <div class="stat" id="total-products">0</div>
+                </div>
+                <div class="card">
+                    <h3>Ventas Hoy</h3>
+                    <div class="stat" id="sales-today">$0</div>
+                </div>
+                <div class="card">
+                    <h3>Productos de Bajo Stock</h3>
+                    <div class="stat" id="low-stock">0</div>
+                </div>
+                <div class="card">
+                    <h3>Ventas de la Semana</h3>
+                    <div class="stat" id="sales-week">$0</div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 30px;">Últimas Ventas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>ID</th>
+                        <th>Productos</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="recent-sales">
+                    <!-- Se llenará dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Inventario -->
+        <div class="content" id="inventory">
+            <h2>Gestión de Inventario</h2>
+            
+            <div class="search-container">
+                <input type="text" id="inventory-search" placeholder="Buscar productos...">
+                <button onclick="searchInventory()">Buscar</button>
+            </div>
+            
+            <button onclick="openAddProductModal()">Agregar Nuevo Producto</button>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-table">
+                    <!-- Se llenará dinámicamente -->
+                </tbody>
+            </table>
+            
+            <!-- Modal para agregar/editar producto -->
+            <div id="product-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeProductModal()">&times;</span>
+                    <h2 id="modal-title">Agregar Producto</h2>
+                    <form id="product-form">
+                        <input type="hidden" id="edit-id">
+                        <div class="form-group">
+                            <label for="product-code">Código:</label>
+                            <input type="text" id="product-code" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-name">Nombre del Producto:</label>
+                            <input type="text" id="product-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-category">Categoría:</label>
+                            <select id="product-category" required>
+                                <option value="">Seleccionar categoría</option>
+                                <option value="Fundas">Fundas</option>
+                                <option value="Hidrogel">Hidrogel</option>
+                                <option value="Vidrio Templado">Vidrio Templado</option>
+                                <option value="Parlantes">Parlantes Bluetooth</option>
+                                <option value="Teclados">Teclados</option>
+                                <option value="Cables">Cables</option>
+                                <option value="Cargadores">Cargadores</option>
+                                <option value="Otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-price">Precio:</label>
+                            <input type="number" id="product-price" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-stock">Stock:</label>
+                            <input type="number" id="product-stock" min="0" required>
+                        </div>
+                        <button type="submit" id="save-product">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ventas -->
+        <div class="content" id="sales">
+            <h2>Registro de Ventas</h2>
+            
+            <div class="scanner-container">
+                <h3>Escanear Producto</h3>
+                <div id="scanner-status">Presione el botón para activar el escáner</div>
+                <button id="scan-button">Activar Escáner</button>
+                <input type="text" id="manual-code" placeholder="O ingrese el código manualmente">
+                <button onclick="addProductToCart()">Agregar</button>
+            </div>
+            
+            <h3>Productos en la venta actual</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-items">
+                    <!-- Se llenará dinámicamente -->
+                </tbody>
+            </table>
+            
+            <div class="totals-container">
+                <div>
+                    <h3>Total de la venta:</h3>
+                    <h2 id="sale-total">$0.00</h2>
+                </div>
+                <div>
+                    <button id="complete-sale" onclick="completeSale()">Completar Venta</button>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 30px;">Historial de Ventas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>ID</th>
+                        <th>Productos</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-history">
+                    <!-- Se llenará dinámicamente -->
+                </tbody>
+            </table>
+            
+            <!-- Modal para ver detalles de venta -->
+            <div id="sale-details-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeSaleDetailsModal()">&times;</span>
+                    <h2>Detalles de la Venta #<span id="sale-id"></span></h2>
+                    <p>Fecha: <span id="sale-date"></span></p>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sale-items">
+                            <!-- Se llenará dinámicamente -->
+                        </tbody>
+                    </table>
+                    
+                    <div class="totals-container">
+                        <h3>Total: $<span id="sale-total-detail"></span></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Búsqueda -->
+        <div class="content" id="search">
+            <h2>Buscador de Productos</h2>
+            
+            <div class="search-container">
+                <input type="text" id="search-term" placeholder="Buscar por nombre, código o categoría...">
+                <button onclick="searchProducts()">Buscar</button>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody id="search-results">
+                    <!-- Se llenará dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="./script.js"></script>
+</body>
+</html>
